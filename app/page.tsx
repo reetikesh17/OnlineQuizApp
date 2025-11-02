@@ -3,6 +3,112 @@
 import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
 import { Timer, Award, CheckCircle, LogOut, Home, UserIcon } from "lucide-react"
+import { validateCredentials } from "@/lib/auth"
+import { parseCSVToQuizzes } from "@/lib/csvParser"
+import LobbyScreen from "@/components/lobby/LobbyScreen"
+
+// CSV Data
+const CSV_CONTENT = `Topic,Question,OptionA,OptionB,OptionC,OptionD,CorrectAnswer,Difficulty
+Computer Science Fundamentals,What does CPU stand for?,Central Processing Unit,Computer Personal Unit,Core Processing Utility,Central Program Unit,Central Processing Unit,Easy
+Computer Science Fundamentals,What is the time complexity of binary search?,O(n),O(n log n),O(log n),O(1),O(log n),Medium
+Computer Science Fundamentals,Which of the following is NOT a programming paradigm?,Object-Oriented,Functional,Declarative,Sequential,Sequential,Medium
+Computer Science Fundamentals,Which of the following sorting algorithms is the fastest on average?,Bubble Sort,Insertion Sort,Quick Sort,Selection Sort,Quick Sort,Hard
+Computer Science Fundamentals,Which protocol is used to transfer web pages?,HTTP,FTP,SMTP,TCP,HTTP,Easy
+Computer Science Fundamentals,Which data structure is used for recursion?,Queue,Array,Stack,Tree,Stack,Medium
+Computer Science Fundamentals,What does RAM stand for?,Random Access Memory,Read Access Module,Rapid Action Memory,Random Allocated Memory,Random Access Memory,Easy
+Computer Science Fundamentals,What is the output of 5 >> 1 in binary operations?,2,3,5,10,2,Hard
+Computer Science Fundamentals,What is the main function of an operating system?,Process Management,Data Storage,App Compilation,Designing UI,Process Management,Easy
+Computer Science Fundamentals,Which algorithm is used in public-key encryption?,AES,RSA,MD5,SHA-1,RSA,Hard
+Physics,What is the SI unit of force?,Newton,Pascal,Joule,Watt,Newton,Easy
+Physics,What is the speed of light?,3x10^5 m/s,3x10^8 m/s,3x10^6 m/s,3x10^9 m/s,3x10^8 m/s,Easy
+Physics,What is Ohm's Law?,V = IR,F = ma,P = IV,E = mc^2,V = IR,Medium
+Physics,Which of these particles has no charge?,Electron,Proton,Neutron,Positron,Neutron,Easy
+Physics,Which principle explains floating objects?,Pascal's Principle,Bernoulli's Principle,Archimedes' Principle,Newton's Law,Archimedes' Principle,Medium
+Physics,Who discovered radioactivity?,Newton,Einstein,Becquerel,Curie,Becquerel,Medium
+Physics,"In superconductors, resistance becomes:",Infinite,Zero,Constant,Double,Zero,Hard
+Physics,What type of wave is light?,Longitudinal,Transverse,Mechanical,Standing,Transverse,Easy
+Physics,What is the unit of power?,Watt,Joule,Ampere,Newton,Watt,Medium
+Physics,What is Planck's constant approximately?,6.63×10⁻³⁴ Js,3×10⁸ Js,9.81 m/s²,1.6×10⁻¹⁹ C,6.63×10⁻³⁴ Js,Hard
+Biology,What is the powerhouse of the cell?,Nucleus,Ribosome,Mitochondria,Golgi Apparatus,Mitochondria,Easy
+Biology,Which pigment gives plants their green color?,Carotene,Xanthophyll,Chlorophyll,Anthocyanin,Chlorophyll,Easy
+Biology,Which organ filters blood?,Liver,Heart,Kidney,Lungs,Kidney,Medium
+Biology,DNA stands for?,Deoxyribonucleic Acid,Deoxyribose Nitrogen Acid,Deoxy Nucleic Acid,Deoxyribose Nucleotide Acid,Deoxyribonucleic Acid,Medium
+Biology,What is the normal human body temperature?,37°C,36°C,38°C,35°C,37°C,Easy
+Biology,What is the largest organ in the human body?,Brain,Liver,Skin,Lungs,Skin,Easy
+Biology,What is photosynthesis?,Conversion of light to sugar,Breaking down sugar,Respiration,Protein synthesis,Conversion of light to sugar,Medium
+Biology,Which vitamin is produced when exposed to sunlight?,Vitamin A,Vitamin B,Vitamin D,Vitamin C,Vitamin D,Medium
+Biology,Which molecule carries genetic code?,RNA,DNA,Protein,Enzyme,DNA,Easy
+Biology,Which scientist proposed the theory of evolution?,Newton,Darwin,Einstein,Curie,Darwin,Hard
+Mechanical Engineering,What is the unit of torque?,N·m,Joule,Pascal,Watt,N·m,Easy
+Mechanical Engineering,What law states pressure is inversely proportional to volume?,Boyle's Law,Charles' Law,Pascal's Law,Newton's Law,Boyle's Law,Easy
+Mechanical Engineering,Function of a flywheel?,Store energy,Reduce noise,Control temperature,Measure torque,Store energy,Medium
+Mechanical Engineering,Entropy is a measure of:,Order,Disorder,Heat,Energy,Disorder,Medium
+Mechanical Engineering,Which cycle is used in diesel engines?,Otto Cycle,Diesel Cycle,Rankine Cycle,Carnot Cycle,Diesel Cycle,Medium
+Mechanical Engineering,What is Young's modulus?,Stress/Strain,Force/Area,Power/Time,Mass/Volume,Stress/Strain,Easy
+Mechanical Engineering,"In thermodynamics, the first law deals with:",Conservation of energy,Entropy,Pressure,Equilibrium,Conservation of energy,Easy
+Mechanical Engineering,What is the efficiency of Carnot engine based on?,Pressure difference,Temperature difference,Volume,Mass,Temperature difference,Medium
+Mechanical Engineering,What is cavitation?,Formation of vapor bubbles,Condensation,Sublimation,Compression,Formation of vapor bubbles,Hard
+Mechanical Engineering,Bernoulli's theorem applies to:,Viscous fluids,Ideal fluids,Solid materials,Magnetic fields,Ideal fluids,Hard
+General Knowledge,Capital of France?,Paris,London,Rome,Berlin,Paris,Easy
+General Knowledge,Largest continent?,Africa,Europe,Asia,Antarctica,Asia,Easy
+General Knowledge,Who invented light bulb?,Edison,Tesla,Newton,Bell,Edison,Easy
+General Knowledge,The currency of Japan is:,Yen,Won,Dollar,Peso,Yen,Easy
+General Knowledge,Which ocean is the largest?,Atlantic,Pacific,Indian,Arctic,Pacific,Easy
+General Knowledge,Who wrote 'Hamlet'?,Shakespeare,Milton,Byron,Keats,Shakespeare,Medium
+General Knowledge,First man on the moon?,Neil Armstrong,Buzz Aldrin,Yuri Gagarin,John Glenn,Neil Armstrong,Easy
+General Knowledge,Which year did WW2 end?,1945,1944,1940,1950,1945,Medium
+General Knowledge,The Great Wall of China was built mainly to:,Control trade,Defend against invasions,Mark borders,Reduce population,Defend against invasions,Hard
+General Knowledge,Who painted 'Starry Night'?,Van Gogh,Da Vinci,Picasso,Rembrandt,Van Gogh,Hard
+Programming,What does API stand for?,Application Programming Interface,Advanced Programming Index,Application Process Interface,Active Protocol Interface,Application Programming Interface,Easy
+Programming,Which language is used for web development?,Python,HTML,C,Java,HTML,Easy
+Programming,"In Python, '==' checks for:",Identity,Equality,Assignment,None,Equality,Easy
+Programming,Which data structure uses LIFO?,Stack,Queue,Tree,Array,Stack,Medium
+Programming,OOP stands for:,Object Oriented Programming,Optical Operation Process,Ordered Object Processing,Object Oriented Procedure,Object Oriented Programming,Easy
+Programming,What is recursion?,Looping through data,Function calling itself,Pointer increment,Error handling,Function calling itself,Medium
+Programming,SQL is used for:,Image processing,Database management,Machine learning,Web rendering,Database management,Medium
+Programming,What is Big O notation used for?,Algorithm efficiency,Memory allocation,Error tracking,Debugging,Algorithm efficiency,Hard
+Programming,Which of these is immutable in Python?,List,Set,Tuple,Dictionary,Tuple,Medium
+Programming,What is the result of 3 + 2 * 2?,10,7,8,9,7,Easy
+Android Development,What is an Activity?,UI Screen,Background Process,Layout File,Library,UI Screen,Easy
+Android Development,What is an Intent?,Message for action,XML Layout,Database,Notification,Message for action,Medium
+Android Development,Android apps are written in:,Java/Kotlin,Swift,C#,Python,Java/Kotlin,Easy
+Android Development,What does APK stand for?,Android Package Kit,Application Key,App Package Kernel,Android Program Key,Android Package Kit,Medium
+Android Development,What is RecyclerView used for?,Scrolling lists,Database,Navigation,Storage,Scrolling lists,Medium
+Android Development,What file defines app permissions?,AndroidManifest.xml,MainActivity.java,build.gradle,strings.xml,AndroidManifest.xml,Easy
+Android Development,Gradle is used for:,Build automation,Code debugging,UI testing,Data storage,Build automation,Medium
+Android Development,Which company developed Android?,Google,Microsoft,IBM,Oracle,Google,Easy
+Android Development,What is a Fragment?,UI component inside an Activity,XML tag,Database entity,Network module,UI component inside an Activity,Hard
+Android Development,What layout arranges elements vertically?,LinearLayout,RelativeLayout,ConstraintLayout,FrameLayout,LinearLayout,Easy
+Aptitude,"If 2x + 4 = 10, what is x?",2,3,4,6,3,Easy
+Aptitude,"Next term: 2, 4, 8, 16, ?",18,20,32,24,32,Easy
+Aptitude,A train 120m long crosses a pole in 10s. Speed?,10 m/s,12 m/s,14 m/s,15 m/s,12 m/s,Medium
+Aptitude,"If 40% of a number is 80, find number.",120,160,200,240,200,Medium
+Aptitude,Simplify: (5×6)/3,10,12,8,9,10,Easy
+Aptitude,"Odd one out: Cat, Dog, Cow, Chair",Cat,Dog,Chair,Cow,Chair,Easy
+Aptitude,Square root of 225?,10,12,15,20,15,Easy
+Aptitude,"If 12 pens cost ₹180, cost of one pen?",₹10,₹12,₹15,₹20,₹15,Medium
+Aptitude,Angle between hands at 3:15?,7.5°,30°,45°,52.5°,7.5°,Hard
+Aptitude,Rearrange: RAEHT,HATER,HEART,EARTH,REATH,HEART,Medium
+Movies,Who directed Inception?,Nolan,Spielberg,Cameron,Tarantino,Nolan,Easy
+Movies,Who plays Iron Man?,Chris Evans,Chris Hemsworth,Robert Downey Jr.,Tom Holland,Robert Downey Jr.,Easy
+Movies,Oscar Best Picture 2020?,Parasite,Joker,1917,Nomadland,Parasite,Medium
+Movies,Fictional city in Black Panther?,Wakanda,Zion,Asgard,Gotham,Wakanda,Easy
+Movies,First Pokémon created?,Bulbasaur,Pikachu,Mew,Rhydon,Rhydon,Hard
+Movies,Voice of Elsa?,Idina Menzel,Ariana Grande,Taylor Swift,Adele,Idina Menzel,Medium
+Movies,In which year was Netflix founded?,1995,1997,2001,2005,1997,Medium
+Movies,Highest-grossing film?,Avatar,Avengers: Endgame,Titanic,Frozen II,Avatar,Hard
+Movies,Who directed Titanic?,James Cameron,Spielberg,Nolan,Ridley Scott,James Cameron,Easy
+Movies,Harry Potter's owl name?,Errol,Pigwidgeon,Hedwig,Scabbers,Hedwig,Easy
+Literature,Who wrote Pride and Prejudice?,Jane Austen,Emily Bronte,George Eliot,Mary Shelley,Jane Austen,Easy
+Literature,Who wrote The Raven?,Poe,Frost,Shakespeare,Wordsworth,Poe,Medium
+Literature,Who wrote 1984?,Orwell,Huxley,Wells,Hemingway,Orwell,Easy
+Literature,Author of The Alchemist?,Coelho,Tolstoy,Maugham,Rushdie,Coelho,Easy
+Literature,What is an oxymoron?,Contradictory phrase,Comparison,Exaggeration,Symbol,Contradictory phrase,Medium
+Literature,Synonym of 'benevolent'?,Kind,Cruel,Proud,Lazy,Kind,Easy
+Literature,Figure of speech in 'Time is money'?,Simile,Metaphor,Alliteration,Irony,Metaphor,Medium
+Literature,Who wrote The Odyssey?,Homer,Virgil,Socrates,Plato,Homer,Hard
+Literature,What is the antonym of 'ancient'?,Modern,Old,Primitive,Archaic,Modern,Easy
+Literature,What is the plural of 'phenomenon'?,Phenomenas,Phenomenons,Phenomena,Phenomeni,Phenomena,Medium`
 
 // Types
 interface QuizAppUser {
@@ -15,10 +121,10 @@ interface QuizAppUser {
 
 interface Question {
   id: string
-  type: "radio" | "checkbox" | "text" | "boolean"
+  type: "radio"
   question: string
-  options?: string[]
-  correctAnswer: string | string[]
+  options: string[]
+  correctAnswer: string
 }
 
 interface Quiz {
@@ -41,7 +147,7 @@ interface QuizAttempt {
 // Context
 interface AppContextType {
   user: QuizAppUser | null
-  login: (email: string, password: string) => void
+  login: (email: string, password: string) => boolean
   logout: () => void
   quizzes: Quiz[]
   currentQuiz: Quiz | null
@@ -58,94 +164,8 @@ const useApp = () => {
   return context
 }
 
-// Mock Data
-const mockQuizzes: Quiz[] = [
-  {
-    id: "1",
-    title: "JavaScript Fundamentals",
-    description: "Test your knowledge of core JavaScript concepts",
-    duration: 300,
-    category: "Programming",
-    questions: [
-      {
-        id: "q1",
-        type: "radio",
-        question: "What is the correct way to declare a variable in JavaScript?",
-        options: ["variable x = 5", "let x = 5", "v x = 5", "dim x = 5"],
-        correctAnswer: "let x = 5",
-      },
-      {
-        id: "q2",
-        type: "checkbox",
-        question: "Which of the following are JavaScript data types?",
-        options: ["String", "Number", "Boolean", "Character"],
-        correctAnswer: ["String", "Number", "Boolean"],
-      },
-      {
-        id: "q3",
-        type: "boolean",
-        question: "JavaScript is a compiled language.",
-        correctAnswer: "false",
-      },
-      {
-        id: "q4",
-        type: "text",
-        question: "What keyword is used to create a function in JavaScript?",
-        correctAnswer: "function",
-      },
-    ],
-  },
-  {
-    id: "2",
-    title: "React Basics",
-    description: "Understand the fundamentals of React",
-    duration: 240,
-    category: "Programming",
-    questions: [
-      {
-        id: "q1",
-        type: "radio",
-        question: "What is JSX?",
-        options: ["A JavaScript extension", "A CSS framework", "A database", "A server"],
-        correctAnswer: "A JavaScript extension",
-      },
-      {
-        id: "q2",
-        type: "boolean",
-        question: "React uses a virtual DOM.",
-        correctAnswer: "true",
-      },
-      {
-        id: "q3",
-        type: "text",
-        question: "What hook is used to manage state in functional components?",
-        correctAnswer: "useState",
-      },
-    ],
-  },
-  {
-    id: "3",
-    title: "General Knowledge",
-    description: "Test your general knowledge",
-    duration: 180,
-    category: "General",
-    questions: [
-      {
-        id: "q1",
-        type: "radio",
-        question: "What is the capital of France?",
-        options: ["London", "Berlin", "Paris", "Madrid"],
-        correctAnswer: "Paris",
-      },
-      {
-        id: "q2",
-        type: "boolean",
-        question: "The Earth is flat.",
-        correctAnswer: "false",
-      },
-    ],
-  },
-]
+// Quiz Data from CSV
+const quizData: Quiz[] = parseCSVToQuizzes(CSV_CONTENT)
 
 // App Provider
 const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -168,14 +188,34 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   }, [user])
 
-  const login = (email: string, _password: string) => {
-    setUser({
-      id: "1",
-      name: email.split("@")[0],
-      email,
-      score: 850,
-      quizzesCompleted: 12,
-    })
+  const login = (email: string, password: string) => {
+    const authUser = validateCredentials(email, password)
+    
+    if (authUser) {
+      // Check if user data exists in localStorage
+      const storedUserData = localStorage.getItem(`userData_${authUser.id}`)
+      let userData = {
+        id: authUser.id,
+        name: authUser.name,
+        email: authUser.email,
+        score: 0,
+        quizzesCompleted: 0,
+      }
+
+      if (storedUserData) {
+        const parsed = JSON.parse(storedUserData)
+        userData = {
+          ...userData,
+          score: parsed.score || 0,
+          quizzesCompleted: parsed.quizzesCompleted || 0,
+        }
+      }
+
+      setUser(userData)
+      return true
+    }
+    
+    return false
   }
 
   const logout = () => {
@@ -185,7 +225,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   const startQuiz = (quizId: string) => {
-    const quiz = mockQuizzes.find((q) => q.id === quizId)
+    const quiz = quizData.find((q) => q.id === quizId)
     if (quiz) setCurrentQuiz(quiz)
   }
 
@@ -194,15 +234,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     let correct = 0
     currentQuiz.questions.forEach((q) => {
-      const userAnswer = answers[q.id]
-      if (Array.isArray(q.correctAnswer) && Array.isArray(userAnswer)) {
-        if (JSON.stringify(q.correctAnswer.sort()) === JSON.stringify(userAnswer.sort())) {
-          correct++
-        }
-      } else if (typeof userAnswer === "string" && typeof q.correctAnswer === "string") {
-        if (userAnswer.toLowerCase().trim() === q.correctAnswer.toLowerCase().trim()) {
-          correct++
-        }
+      const userAnswer = answers[q.id] as string
+      if (userAnswer && userAnswer.trim() === q.correctAnswer.trim()) {
+        correct++
       }
     })
 
@@ -218,11 +252,18 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     setCurrentQuiz(null)
 
     if (user) {
-      setUser({
+      const updatedUser = {
         ...user,
         quizzesCompleted: user.quizzesCompleted + 1,
         score: user.score + correct * 10,
-      })
+      }
+      setUser(updatedUser)
+      
+      // Save updated user data to localStorage
+      localStorage.setItem(`userData_${user.id}`, JSON.stringify({
+        score: updatedUser.score,
+        quizzesCompleted: updatedUser.quizzesCompleted,
+      }))
     }
 
     return attempt
@@ -234,7 +275,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         user,
         login,
         logout,
-        quizzes: mockQuizzes,
+        quizzes: quizData,
         currentQuiz,
         startQuiz,
         submitQuiz,
@@ -277,46 +318,154 @@ const Card: React.FC<{ children: React.ReactNode; className?: string }> = ({ chi
 
 // Pages
 const Landing: React.FC<{ onGetStarted: () => void }> = ({ onGetStarted }) => (
-  <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
-    <div className="max-w-4xl w-full text-center text-white">
-      <Award className="w-24 h-24 mx-auto mb-6" />
-      <h1 className="text-5xl font-bold mb-4">QuizMaster Pro</h1>
-      <p className="text-xl mb-8 opacity-90">Challenge yourself with interactive quizzes and track your progress</p>
-      <div className="grid md:grid-cols-3 gap-6 mb-12">
-        <Card className="text-gray-800">
-          <Timer className="w-12 h-12 mx-auto mb-3 text-blue-600" />
-          <h3 className="font-semibold mb-2">Timed Challenges</h3>
-          <p className="text-sm text-gray-600">Race against the clock</p>
-        </Card>
-        <Card className="text-gray-800">
-          <CheckCircle className="w-12 h-12 mx-auto mb-3 text-green-600" />
-          <h3 className="font-semibold mb-2">Instant Feedback</h3>
-          <p className="text-sm text-gray-600">See your results immediately</p>
-        </Card>
-        <Card className="text-gray-800">
-          <Award className="w-12 h-12 mx-auto mb-3 text-purple-600" />
-          <h3 className="font-semibold mb-2">Track Progress</h3>
-          <p className="text-sm text-gray-600">Monitor your improvement</p>
-        </Card>
+  <div className="min-h-screen bg-gradient-to-b from-blue-500 to-purple-600 flex items-center justify-center p-4 relative overflow-hidden">
+    {/* Gradient blur glow for depth */}
+    <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-transparent to-purple-500/20 blur-3xl"></div>
+    
+    {/* Main content container */}
+    <div className="relative z-10 max-w-5xl w-full text-center">
+      {/* Header / Logo Section */}
+      <div className="mb-16 animate-fade-in-up">
+        {/* Minimal medal icon */}
+        <div className="w-20 h-20 mx-auto mb-8 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl">
+          <Award className="w-10 h-10 text-white" strokeWidth={1.5} />
+        </div>
+        
+        {/* App title */}
+        <h1 className="text-6xl md:text-7xl font-black mb-6 text-white tracking-tight">
+          QuizMaster Pro
+        </h1>
+        
+        {/* Tagline */}
+        <p className="text-xl md:text-2xl text-white/90 font-light max-w-2xl mx-auto leading-relaxed">
+          Challenge yourself with interactive quizzes and track your progress
+        </p>
       </div>
-      <Button onClick={onGetStarted} className="text-lg px-8 py-3">
-        Get Started
-      </Button>
+
+      {/* Feature Cards Section */}
+      <div className="grid md:grid-cols-3 gap-8 mb-16 max-w-4xl mx-auto">
+        {/* Timed Challenges Card */}
+        <div className="group bg-white/95 backdrop-blur-sm rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 animate-fade-in-up animation-delay-100">
+          <div className="w-16 h-16 mx-auto mb-6 bg-blue-100 rounded-2xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+            <Timer className="w-8 h-8 text-blue-600" strokeWidth={1.5} />
+          </div>
+          <h3 className="text-xl font-bold text-gray-800 mb-3">Timed Challenges</h3>
+          <p className="text-gray-600 leading-relaxed">Race against the clock</p>
+        </div>
+
+        {/* Instant Feedback Card */}
+        <div className="group bg-white/95 backdrop-blur-sm rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 animate-fade-in-up animation-delay-200">
+          <div className="w-16 h-16 mx-auto mb-6 bg-green-100 rounded-2xl flex items-center justify-center group-hover:bg-green-200 transition-colors">
+            <CheckCircle className="w-8 h-8 text-green-600" strokeWidth={1.5} />
+          </div>
+          <h3 className="text-xl font-bold text-gray-800 mb-3">Instant Feedback</h3>
+          <p className="text-gray-600 leading-relaxed">See your results immediately</p>
+        </div>
+
+        {/* Track Progress Card */}
+        <div className="group bg-white/95 backdrop-blur-sm rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 animate-fade-in-up animation-delay-300">
+          <div className="w-16 h-16 mx-auto mb-6 bg-purple-100 rounded-2xl flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+            <Award className="w-8 h-8 text-purple-600" strokeWidth={1.5} />
+          </div>
+          <h3 className="text-xl font-bold text-gray-800 mb-3">Track Progress</h3>
+          <p className="text-gray-600 leading-relaxed">Monitor your improvement</p>
+        </div>
+      </div>
+
+      {/* Call-to-Action Section */}
+      <div className="animate-fade-in-up animation-delay-400">
+        <button
+          onClick={onGetStarted}
+          className="group relative px-12 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xl font-semibold rounded-2xl shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 hover:scale-105 hover:-translate-y-1 animate-pulse-subtle"
+        >
+          <span className="relative z-10">Get Started</span>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"></div>
+        </button>
+      </div>
     </div>
+
+    {/* Footer / Branding - Circular profile icon */}
+    <div className="fixed bottom-6 left-6 z-20">
+      <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
+        <div className="w-6 h-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full"></div>
+      </div>
+    </div>
+
+    {/* Custom CSS for animations */}
+    <style jsx>{`
+      @keyframes fade-in-up {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes pulse-subtle {
+        0%, 100% {
+          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+        }
+      }
+      
+      .animate-fade-in-up {
+        animation: fade-in-up 0.8s ease-out forwards;
+      }
+      
+      .animate-pulse-subtle {
+        animation: pulse-subtle 3s infinite;
+      }
+      
+      .animation-delay-100 {
+        animation-delay: 0.1s;
+      }
+      
+      .animation-delay-200 {
+        animation-delay: 0.2s;
+      }
+      
+      .animation-delay-300 {
+        animation-delay: 0.3s;
+      }
+      
+      .animation-delay-400 {
+        animation-delay: 0.4s;
+      }
+    `}</style>
   </div>
 )
 
-const Auth: React.FC<{ onLogin: (email: string, password: string) => void }> = ({ onLogin }) => {
+const Auth: React.FC<{ onLogin: (email: string, password: string) => boolean }> = ({ onLogin }) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = () => {
-    if (email && password) {
-      onLogin(email, password)
+  const handleSubmit = async () => {
+    if (!email || !password) {
+      setError("Please enter both email and password")
+      return
     }
+
+    setIsLoading(true)
+    setError("")
+
+    // Simulate a brief loading delay for better UX
+    setTimeout(() => {
+      const success = onLogin(email, password)
+      if (!success) {
+        setError("Invalid email or password. Access is restricted to authorized users only.")
+      }
+      setIsLoading(false)
+    }, 500)
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSubmit()
     }
@@ -333,9 +482,10 @@ const Auth: React.FC<{ onLogin: (email: string, password: string) => void }> = (
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyDown}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
               placeholder="your@email.com"
+              disabled={isLoading}
             />
           </div>
           <div>
@@ -344,16 +494,27 @@ const Auth: React.FC<{ onLogin: (email: string, password: string) => void }> = (
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyDown}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
               placeholder="••••••••"
+              disabled={isLoading}
             />
           </div>
-          <Button onClick={handleSubmit} className="w-full">
-            Sign In
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+          <Button onClick={handleSubmit} className="w-full" disabled={isLoading}>
+            {isLoading ? "Signing In..." : "Sign In"}
           </Button>
         </div>
-        <p className="text-center text-sm text-gray-600 mt-4">Demo: Use any email and password</p>
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-center text-sm text-blue-800 font-medium mb-2">Authorized Users Only</p>
+          <p className="text-xs text-blue-600 text-center">
+            Access is restricted to pre-approved accounts. Contact your administrator if you need access.
+          </p>
+        </div>
       </Card>
     </div>
   )
@@ -445,81 +606,24 @@ const QuizPage: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
               <h3 className="text-lg font-semibold text-gray-800 mt-1">{q.question}</h3>
             </div>
 
-            {q.type === "radio" && q.options && (
-              <div className="space-y-2">
-                {q.options.map((option) => (
-                  <label
-                    key={option}
-                    className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
-                  >
-                    <input
-                      type="radio"
-                      name={q.id}
-                      value={option}
-                      checked={answers[q.id] === option}
-                      onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                      className="w-4 h-4 text-blue-600"
-                    />
-                    <span className="text-gray-700">{option}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-
-            {q.type === "checkbox" && q.options && (
-              <div className="space-y-2">
-                {q.options.map((option) => (
-                  <label
-                    key={option}
-                    className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
-                  >
-                    <input
-                      type="checkbox"
-                      value={option}
-                      checked={((answers[q.id] as string[]) || []).includes(option)}
-                      onChange={(e) => {
-                        const current = (answers[q.id] as string[]) || []
-                        const updated = e.target.checked ? [...current, option] : current.filter((v) => v !== option)
-                        handleAnswerChange(q.id, updated)
-                      }}
-                      className="w-4 h-4 text-blue-600 rounded"
-                    />
-                    <span className="text-gray-700">{option}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-
-            {q.type === "boolean" && (
-              <div className="space-y-2">
-                {["true", "false"].map((option) => (
-                  <label
-                    key={option}
-                    className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
-                  >
-                    <input
-                      type="radio"
-                      name={q.id}
-                      value={option}
-                      checked={answers[q.id] === option}
-                      onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                      className="w-4 h-4 text-blue-600"
-                    />
-                    <span className="text-gray-700 capitalize">{option}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-
-            {q.type === "text" && (
-              <input
-                type="text"
-                value={(answers[q.id] as string) || ""}
-                onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                placeholder="Type your answer..."
-              />
-            )}
+            <div className="space-y-2">
+              {q.options.map((option) => (
+                <label
+                  key={option}
+                  className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
+                >
+                  <input
+                    type="radio"
+                    name={q.id}
+                    value={option}
+                    checked={answers[q.id] === option}
+                    onChange={(e) => handleAnswerChange(q.id, e.target.value)}
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  <span className="text-gray-700">{option}</span>
+                </label>
+              ))}
+            </div>
           </Card>
         ))}
       </div>
@@ -570,10 +674,7 @@ const Results: React.FC<{ onBackToLobby: () => void }> = ({ onBackToLobby }) => 
           <h2 className="text-2xl font-bold text-gray-800">Review Answers</h2>
           {quiz?.questions.map((q, idx) => {
             const userAnswer = lastAttempt.answers[q.id]
-            const isCorrect = Array.isArray(q.correctAnswer)
-              ? JSON.stringify((userAnswer as string[])?.sort()) === JSON.stringify(q.correctAnswer.sort())
-              : typeof userAnswer === "string" &&
-                userAnswer.toLowerCase().trim() === (q.correctAnswer as string).toLowerCase().trim()
+            const isCorrect = typeof userAnswer === "string" && userAnswer.trim() === q.correctAnswer.trim()
 
             return (
               <div
@@ -592,12 +693,12 @@ const Results: React.FC<{ onBackToLobby: () => void }> = ({ onBackToLobby }) => 
                 <div className="text-sm space-y-1">
                   <p className="text-gray-700">
                     <span className="font-semibold">Your answer:</span>{" "}
-                    {Array.isArray(userAnswer) ? userAnswer.join(", ") : userAnswer || "No answer"}
+                    {userAnswer || "No answer"}
                   </p>
                   {!isCorrect && (
                     <p className="text-gray-700">
                       <span className="font-semibold">Correct answer:</span>{" "}
-                      {Array.isArray(q.correctAnswer) ? q.correctAnswer.join(", ") : q.correctAnswer}
+                      {q.correctAnswer}
                     </p>
                   )}
                 </div>
@@ -618,6 +719,9 @@ const Profile: React.FC = () => {
   const { user } = useApp()
   if (!user) return null
 
+  const averageScore = user.quizzesCompleted > 0 ? Math.round(user.score / user.quizzesCompleted) : 0
+  const hasQuizHistory = user.quizzesCompleted > 0
+
   return (
     <div className="max-w-4xl mx-auto">
       <Card>
@@ -628,32 +732,86 @@ const Profile: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-800">{user.name}</h1>
             <p className="text-gray-600">{user.email}</p>
+            <div className="mt-2">
+              {hasQuizHistory ? (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  Active Player
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                  New Player
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="p-6 bg-blue-50 rounded-lg text-center">
-            <div className="text-3xl font-bold text-blue-600">{user.score}</div>
-            <div className="text-sm text-gray-600 mt-1">Total Points</div>
-          </div>
-          <div className="p-6 bg-green-50 rounded-lg text-center">
-            <div className="text-3xl font-bold text-green-600">{user.quizzesCompleted}</div>
-            <div className="text-sm text-gray-600 mt-1">Quizzes Completed</div>
-          </div>
-          <div className="p-6 bg-purple-50 rounded-lg text-center">
-            <div className="text-3xl font-bold text-purple-600">
-              {user.quizzesCompleted > 0 ? Math.round(user.score / user.quizzesCompleted) : 0}
+        {hasQuizHistory ? (
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="p-6 bg-blue-50 rounded-lg text-center">
+              <div className="text-3xl font-bold text-blue-600">{user.score}</div>
+              <div className="text-sm text-gray-600 mt-1">Total Points</div>
             </div>
-            <div className="text-sm text-gray-600 mt-1">Avg Score</div>
+            <div className="p-6 bg-green-50 rounded-lg text-center">
+              <div className="text-3xl font-bold text-green-600">{user.quizzesCompleted}</div>
+              <div className="text-sm text-gray-600 mt-1">Quizzes Completed</div>
+            </div>
+            <div className="p-6 bg-purple-50 rounded-lg text-center">
+              <div className="text-3xl font-bold text-purple-600">{averageScore}</div>
+              <div className="text-sm text-gray-600 mt-1">Avg Points per Quiz</div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Award className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">Welcome to QuizMaster!</h3>
+            <p className="text-gray-600 mb-6">
+              You haven't completed any quizzes yet. Start your first quiz to see your progress here!
+            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+              <h4 className="font-medium text-blue-800 mb-2">Getting Started:</h4>
+              <ul className="text-sm text-blue-700 space-y-1 text-left">
+                <li>• Browse available quizzes in the Quiz Lobby</li>
+                <li>• Complete quizzes to earn points</li>
+                <li>• Track your progress and improvement</li>
+                <li>• Compete with other players</li>
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {hasQuizHistory && (
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Performance Insights</h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
+                <h4 className="font-medium text-gray-800 mb-2">Quiz Streak</h4>
+                <p className="text-2xl font-bold text-blue-600">{user.quizzesCompleted}</p>
+                <p className="text-sm text-gray-600">
+                  {user.quizzesCompleted === 1 ? 'First quiz completed!' : 'Quizzes in a row'}
+                </p>
+              </div>
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4">
+                <h4 className="font-medium text-gray-800 mb-2">Performance Level</h4>
+                <p className="text-2xl font-bold text-green-600">
+                  {averageScore >= 80 ? 'Excellent' : averageScore >= 60 ? 'Good' : averageScore >= 40 ? 'Fair' : 'Improving'}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Based on {averageScore} avg points per quiz
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   )
 }
 
 const App: React.FC = () => {
-  const [page, setPage] = useState<"landing" | "auth" | "lobby" | "quiz" | "results" | "profile">("landing")
+  const [page, setPage] = useState<"landing" | "auth" | "lobby" | "lobbyroom" | "quiz" | "results" | "profile">("landing")
   const { user, login, logout, currentQuiz } = useApp()
 
   useEffect(() => {
@@ -666,14 +824,26 @@ const App: React.FC = () => {
       <nav className="bg-white shadow-md mb-8">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <h1 className="text-2xl font-bold text-gray-800">QuizMaster</h1>
+            <button
+              onClick={() => setPage("landing")}
+              className="text-2xl font-bold text-gray-800 hover:text-blue-600 transition-colors"
+            >
+              QuizMaster
+            </button>
             <div className="flex gap-4">
               <button
                 onClick={() => setPage("lobby")}
                 className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors"
               >
                 <Home className="w-5 h-5" />
-                <span>Lobby</span>
+                <span>Quiz Lobby</span>
+              </button>
+              <button
+                onClick={() => setPage("lobbyroom")}
+                className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                <Home className="w-5 h-5" />
+                <span>Room Lobby</span>
               </button>
               <button
                 onClick={() => setPage("profile")}
@@ -685,7 +855,10 @@ const App: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={logout}
+            onClick={() => {
+              logout()
+              setPage("auth")
+            }}
             className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors"
           >
             <LogOut className="w-5 h-5" />
@@ -702,8 +875,11 @@ const App: React.FC = () => {
       {page === "auth" && (
         <Auth
           onLogin={(email, pwd) => {
-            login(email, pwd)
-            setPage("lobby")
+            const success = login(email, pwd)
+            if (success) {
+              setPage("lobby")
+            }
+            return success
           }}
         />
       )}
@@ -712,6 +888,22 @@ const App: React.FC = () => {
           <NavBar />
           <div className="max-w-7xl mx-auto px-4 py-8">
             {page === "lobby" && <QuizLobby />}
+            {page === "lobbyroom" && user && (
+              <LobbyScreen
+                roomCode={`QM${Math.random().toString(36).substr(2, 4).toUpperCase()}`}
+                currentUser={{
+                  id: user.id,
+                  username: user.name,
+                  avatar: user.name.charAt(0).toUpperCase() + "👤",
+                  isReady: false,
+                  isHost: true,
+                  isOnline: true
+                }}
+                isHost={true}
+                onBackToLobby={() => setPage("lobby")}
+                onStartQuiz={() => setPage("quiz")}
+              />
+            )}
             {page === "quiz" && <QuizPage onComplete={() => setPage("results")} />}
             {page === "results" && <Results onBackToLobby={() => setPage("lobby")} />}
             {page === "profile" && <Profile />}

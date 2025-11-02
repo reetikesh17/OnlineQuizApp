@@ -1,0 +1,101 @@
+Topic,Question,OptionA,OptionB,OptionC,OptionD,CorrectAnswer,Difficulty
+Computer Science Fundamentals,What does CPU stand for?,Central Processing Unit,Computer Personal Unit,Core Processing Utility,Central Program Unit,Central Processing Unit,Easy
+Computer Science Fundamentals,What is the time complexity of binary search?,O(n),O(n log n),O(log n),O(1),O(log n),Medium
+Computer Science Fundamentals,Which of the following is NOT a programming paradigm?,Object-Oriented,Functional,Declarative,Sequential,Sequential,Medium
+Computer Science Fundamentals,Which of the following sorting algorithms is the fastest on average?,Bubble Sort,Insertion Sort,Quick Sort,Selection Sort,Quick Sort,Hard
+Computer Science Fundamentals,Which protocol is used to transfer web pages?,HTTP,FTP,SMTP,TCP,HTTP,Easy
+Computer Science Fundamentals,Which data structure is used for recursion?,Queue,Array,Stack,Tree,Stack,Medium
+Computer Science Fundamentals,What does RAM stand for?,Random Access Memory,Read Access Module,Rapid Action Memory,Random Allocated Memory,Random Access Memory,Easy
+Computer Science Fundamentals,What is the output of 5 >> 1 in binary operations?,2,3,5,10,2,Hard
+Computer Science Fundamentals,What is the main function of an operating system?,Process Management,Data Storage,App Compilation,Designing UI,Process Management,Easy
+Computer Science Fundamentals,Which algorithm is used in public-key encryption?,AES,RSA,MD5,SHA-1,RSA,Hard
+Physics,What is the SI unit of force?,Newton,Pascal,Joule,Watt,Newton,Easy
+Physics,What is the speed of light?,3x10^5 m/s,3x10^8 m/s,3x10^6 m/s,3x10^9 m/s,3x10^8 m/s,Easy
+Physics,What is Ohm’s Law?,V = IR,F = ma,P = IV,E = mc^2,V = IR,Medium
+Physics,Which of these particles has no charge?,Electron,Proton,Neutron,Positron,Neutron,Easy
+Physics,Which principle explains floating objects?,Pascal’s Principle,Bernoulli’s Principle,Archimedes’ Principle,Newton’s Law,Archimedes’ Principle,Medium
+Physics,Who discovered radioactivity?,Newton,Einstein,Becquerel,Curie,Becquerel,Medium
+Physics,"In superconductors, resistance becomes:",Infinite,Zero,Constant,Double,Zero,Hard
+Physics,What type of wave is light?,Longitudinal,Transverse,Mechanical,Standing,Transverse,Easy
+Physics,What is the unit of power?,Watt,Joule,Ampere,Newton,Watt,Medium
+Physics,What is Planck’s constant approximately?,6.63×10⁻³⁴ Js,3×10⁸ Js,9.81 m/s²,1.6×10⁻¹⁹ C,6.63×10⁻³⁴ Js,Hard
+Biology,What is the powerhouse of the cell?,Nucleus,Ribosome,Mitochondria,Golgi Apparatus,Mitochondria,Easy
+Biology,Which pigment gives plants their green color?,Carotene,Xanthophyll,Chlorophyll,Anthocyanin,Chlorophyll,Easy
+Biology,Which organ filters blood?,Liver,Heart,Kidney,Lungs,Kidney,Medium
+Biology,DNA stands for?,Deoxyribonucleic Acid,Deoxyribose Nitrogen Acid,Deoxy Nucleic Acid,Deoxyribose Nucleotide Acid,Deoxyribonucleic Acid,Medium
+Biology,What is the normal human body temperature?,37°C,36°C,38°C,35°C,37°C,Easy
+Biology,What is the largest organ in the human body?,Brain,Liver,Skin,Lungs,Skin,Easy
+Biology,What is photosynthesis?,Conversion of light to sugar,Breaking down sugar,Respiration,Protein synthesis,Conversion of light to sugar,Medium
+Biology,Which vitamin is produced when exposed to sunlight?,Vitamin A,Vitamin B,Vitamin D,Vitamin C,Vitamin D,Medium
+Biology,Which molecule carries genetic code?,RNA,DNA,Protein,Enzyme,DNA,Easy
+Biology,Which scientist proposed the theory of evolution?,Newton,Darwin,Einstein,Curie,Darwin,Hard
+Mechanical Engineering,What is the unit of torque?,N·m,Joule,Pascal,Watt,N·m,Easy
+Mechanical Engineering,What law states pressure is inversely proportional to volume?,Boyle’s Law,Charles’ Law,Pascal’s Law,Newton’s Law,Boyle’s Law,Easy
+Mechanical Engineering,Function of a flywheel?,Store energy,Reduce noise,Control temperature,Measure torque,Store energy,Medium
+Mechanical Engineering,Entropy is a measure of:,Order,Disorder,Heat,Energy,Disorder,Medium
+Mechanical Engineering,Which cycle is used in diesel engines?,Otto Cycle,Diesel Cycle,Rankine Cycle,Carnot Cycle,Diesel Cycle,Medium
+Mechanical Engineering,What is Young’s modulus?,Stress/Strain,Force/Area,Power/Time,Mass/Volume,Stress/Strain,Easy
+Mechanical Engineering,"In thermodynamics, the first law deals with:",Conservation of energy,Entropy,Pressure,Equilibrium,Conservation of energy,Easy
+Mechanical Engineering,What is the efficiency of Carnot engine based on?,Pressure difference,Temperature difference,Volume,Mass,Temperature difference,Medium
+Mechanical Engineering,What is cavitation?,Formation of vapor bubbles,Condensation,Sublimation,Compression,Formation of vapor bubbles,Hard
+Mechanical Engineering,Bernoulli’s theorem applies to:,Viscous fluids,Ideal fluids,Solid materials,Magnetic fields,Ideal fluids,Hard
+General Knowledge,Capital of France?,Paris,London,Rome,Berlin,Paris,Easy
+General Knowledge,Largest continent?,Africa,Europe,Asia,Antarctica,Asia,Easy
+General Knowledge,Who invented light bulb?,Edison,Tesla,Newton,Bell,Edison,Easy
+General Knowledge,The currency of Japan is:,Yen,Won,Dollar,Peso,Yen,Easy
+General Knowledge,Which ocean is the largest?,Atlantic,Pacific,Indian,Arctic,Pacific,Easy
+General Knowledge,Who wrote 'Hamlet'?,Shakespeare,Milton,Byron,Keats,Shakespeare,Medium
+General Knowledge,First man on the moon?,Neil Armstrong,Buzz Aldrin,Yuri Gagarin,John Glenn,Neil Armstrong,Easy
+General Knowledge,Which year did WW2 end?,1945,1944,1940,1950,1945,Medium
+General Knowledge,The Great Wall of China was built mainly to:,Control trade,Defend against invasions,Mark borders,Reduce population,Defend against invasions,Hard
+General Knowledge,Who painted 'Starry Night'?,Van Gogh,Da Vinci,Picasso,Rembrandt,Van Gogh,Hard
+Programming,What does API stand for?,Application Programming Interface,Advanced Programming Index,Application Process Interface,Active Protocol Interface,Application Programming Interface,Easy
+Programming,Which language is used for web development?,Python,HTML,C,Java,HTML,Easy
+Programming,"In Python, '==' checks for:",Identity,Equality,Assignment,None,Equality,Easy
+Programming,Which data structure uses LIFO?,Stack,Queue,Tree,Array,Stack,Medium
+Programming,OOP stands for:,Object Oriented Programming,Optical Operation Process,Ordered Object Processing,Object Oriented Procedure,Object Oriented Programming,Easy
+Programming,What is recursion?,Looping through data,Function calling itself,Pointer increment,Error handling,Function calling itself,Medium
+Programming,SQL is used for:,Image processing,Database management,Machine learning,Web rendering,Database management,Medium
+Programming,What is Big O notation used for?,Algorithm efficiency,Memory allocation,Error tracking,Debugging,Algorithm efficiency,Hard
+Programming,Which of these is immutable in Python?,List,Set,Tuple,Dictionary,Tuple,Medium
+Programming,What is the result of 3 + 2 * 2?,10,7,8,9,7,Easy
+Android Development,What is an Activity?,UI Screen,Background Process,Layout File,Library,UI Screen,Easy
+Android Development,What is an Intent?,Message for action,XML Layout,Database,Notification,Message for action,Medium
+Android Development,Android apps are written in:,Java/Kotlin,Swift,C#,Python,Java/Kotlin,Easy
+Android Development,What does APK stand for?,Android Package Kit,Application Key,App Package Kernel,Android Program Key,Android Package Kit,Medium
+Android Development,What is RecyclerView used for?,Scrolling lists,Database,Navigation,Storage,Scrolling lists,Medium
+Android Development,What file defines app permissions?,AndroidManifest.xml,MainActivity.java,build.gradle,strings.xml,AndroidManifest.xml,Easy
+Android Development,Gradle is used for:,Build automation,Code debugging,UI testing,Data storage,Build automation,Medium
+Android Development,Which company developed Android?,Google,Microsoft,IBM,Oracle,Google,Easy
+Android Development,What is a Fragment?,UI component inside an Activity,XML tag,Database entity,Network module,UI component inside an Activity,Hard
+Android Development,What layout arranges elements vertically?,LinearLayout,RelativeLayout,ConstraintLayout,FrameLayout,LinearLayout,Easy
+Aptitude,"If 2x + 4 = 10, what is x?",2,3,4,6,3,Easy
+Aptitude,"Next term: 2, 4, 8, 16, ?",18,20,32,24,32,Easy
+Aptitude,A train 120m long crosses a pole in 10s. Speed?,10 m/s,12 m/s,14 m/s,15 m/s,12 m/s,Medium
+Aptitude,"If 40% of a number is 80, find number.",120,160,200,240,200,Medium
+Aptitude,Simplify: (5×6)/3,10,12,8,9,10,Easy
+Aptitude,"Odd one out: Cat, Dog, Cow, Chair",Cat,Dog,Chair,Cow,Chair,Easy
+Aptitude,Square root of 225?,10,12,15,20,15,Easy
+Aptitude,"If 12 pens cost ₹180, cost of one pen?",₹10,₹12,₹15,₹20,₹15,Medium
+Aptitude,Angle between hands at 3:15?,7.5°,30°,45°,52.5°,7.5°,Hard
+Aptitude,Rearrange: RAEHT,HATER,HEART,EARTH,REATH,HEART,Medium
+Movies,Who directed Inception?,Nolan,Spielberg,Cameron,Tarantino,Nolan,Easy
+Movies,Who plays Iron Man?,Chris Evans,Chris Hemsworth,Robert Downey Jr.,Tom Holland,Robert Downey Jr.,Easy
+Movies,Oscar Best Picture 2020?,Parasite,Joker,1917,Nomadland,Parasite,Medium
+Movies,Fictional city in Black Panther?,Wakanda,Zion,Asgard,Gotham,Wakanda,Easy
+Movies,First Pokémon created?,Bulbasaur,Pikachu,Mew,Rhydon,Rhydon,Hard
+Movies,Voice of Elsa?,Idina Menzel,Ariana Grande,Taylor Swift,Adele,Idina Menzel,Medium
+Movies,In which year was Netflix founded?,1995,1997,2001,2005,1997,Medium
+Movies,Highest-grossing film?,Avatar,Avengers: Endgame,Titanic,Frozen II,Avatar,Hard
+Movies,Who directed Titanic?,James Cameron,Spielberg,Nolan,Ridley Scott,James Cameron,Easy
+Movies,Harry Potter’s owl name?,Errol,Pigwidgeon,Hedwig,Scabbers,Hedwig,Easy
+Literature,Who wrote Pride and Prejudice?,Jane Austen,Emily Bronte,George Eliot,Mary Shelley,Jane Austen,Easy
+Literature,Who wrote The Raven?,Poe,Frost,Shakespeare,Wordsworth,Poe,Medium
+Literature,Who wrote 1984?,Orwell,Huxley,Wells,Hemingway,Orwell,Easy
+Literature,Author of The Alchemist?,Coelho,Tolstoy,Maugham,Rushdie,Coelho,Easy
+Literature,What is an oxymoron?,Contradictory phrase,Comparison,Exaggeration,Symbol,Contradictory phrase,Medium
+Literature,Synonym of 'benevolent'?,Kind,Cruel,Proud,Lazy,Kind,Easy
+Literature,Figure of speech in 'Time is money'?,Simile,Metaphor,Alliteration,Irony,Metaphor,Medium
+Literature,Who wrote The Odyssey?,Homer,Virgil,Socrates,Plato,Homer,Hard
+Literature,What is the antonym of 'ancient'?,Modern,Old,Primitive,Archaic,Modern,Easy
+Literature,What is the plural of 'phenomenon'?,Phenomenas,Phenomenons,Phenomena,Phenomeni,Phenomena,Medium
