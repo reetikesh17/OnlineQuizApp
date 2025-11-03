@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { LobbyScreenProps } from './types'
-import { mockPlayers, mockChatMessages, defaultQuizSettings, generateRoomCode } from './mockData'
+import { mockPlayers, mockChatMessages, defaultQuizSettings, generateRoomCode, getRandomPracticeQuestion } from './mockData'
 import { useLobbyState, useCountdown, useModals } from './hooks'
 
 // Import components
@@ -18,6 +18,7 @@ import MiniPracticeQuiz from './components/MiniPracticeQuiz'
 import FunFactWidget from './components/FunFactWidget'
 import SettingsModal from './components/SettingsModal'
 import RulesModal from './components/RulesModal'
+import CreateQuizModal from './components/CreateQuizModal'
 
 interface LobbyScreenMainProps extends LobbyScreenProps {
   onBackToLobby: () => void
@@ -65,6 +66,9 @@ const LobbyScreen: React.FC<LobbyScreenMainProps> = ({
     closeRulesModal
   } = useModals()
 
+  // Create Quiz Modal state
+  const [showCreateQuizModal, setShowCreateQuizModal] = useState(false)
+
   // Handle countdown completion
   useEffect(() => {
     if (countdownComplete) {
@@ -88,6 +92,18 @@ const LobbyScreen: React.FC<LobbyScreenMainProps> = ({
   const handleSaveSettings = (newSettings: typeof quizSettings) => {
     setQuizSettings(newSettings)
     closeSettingsModal()
+  }
+
+  const handleCreateQuiz = (customQuiz: { title: string; questions: any[] }) => {
+    // Update quiz settings to use custom quiz
+    setQuizSettings({
+      ...quizSettings,
+      topic: customQuiz.title,
+      isCustomQuiz: true,
+      customQuestions: customQuiz.questions,
+      questionCount: customQuiz.questions.length
+    })
+    setShowCreateQuizModal(false)
   }
 
   const handleSendMessage = (content: string) => {
@@ -174,13 +190,17 @@ const LobbyScreen: React.FC<LobbyScreenMainProps> = ({
                 onStartQuiz={handleStartQuiz}
                 onEditSettings={handleEditSettings}
                 onKickPlayer={handleKickPlayer}
+                onCreateQuiz={() => setShowCreateQuizModal(true)}
                 canStartQuiz={canStartQuiz}
                 playerCount={players.filter(p => p.isOnline).length}
               />
             )}
 
             {/* Mini practice quiz */}
-            <MiniPracticeQuiz />
+            <MiniPracticeQuiz 
+              question={getRandomPracticeQuestion()}
+              onAnswer={() => {}}
+            />
           </div>
 
           {/* Right panel - Chat */}
@@ -196,8 +216,13 @@ const LobbyScreen: React.FC<LobbyScreenMainProps> = ({
 
         {/* Bottom section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <LeaderboardSnapshot />
-          <FunFactWidget />
+          <LeaderboardSnapshot 
+            leaderboard={[]}
+            currentUserId={currentUser.id}
+          />
+          <FunFactWidget 
+            facts={[]}
+          />
         </div>
       </div>
 
@@ -212,6 +237,12 @@ const LobbyScreen: React.FC<LobbyScreenMainProps> = ({
       <RulesModal
         isOpen={showRulesModal}
         onClose={closeRulesModal}
+      />
+
+      <CreateQuizModal
+        isOpen={showCreateQuizModal}
+        onClose={() => setShowCreateQuizModal(false)}
+        onSave={handleCreateQuiz}
       />
     </div>
   )

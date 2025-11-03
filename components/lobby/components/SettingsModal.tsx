@@ -86,11 +86,21 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               value={settings.topic}
               onChange={(e) => handleInputChange('topic', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              disabled={settings.isCustomQuiz}
             >
-              {availableTopics.map(topic => (
-                <option key={topic} value={topic}>{topic}</option>
-              ))}
+              {settings.isCustomQuiz ? (
+                <option value={settings.topic}>{settings.topic} (Custom Quiz)</option>
+              ) : (
+                availableTopics.map(topic => (
+                  <option key={topic} value={topic}>{topic}</option>
+                ))
+              )}
             </select>
+            {settings.isCustomQuiz && (
+              <p className="text-sm text-purple-600 mt-1">
+                This is a custom quiz. Create a new quiz to change the topic.
+              </p>
+            )}
           </div>
 
           {/* Difficulty */}

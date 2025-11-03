@@ -17,6 +17,7 @@ export { default as FunFactWidget } from './components/FunFactWidget'
 // Modals
 export { default as SettingsModal } from './components/SettingsModal'
 export { default as RulesModal } from './components/RulesModal'
+export { default as CreateQuizModal } from './components/CreateQuizModal'
 
 // Types and utilities
 export * from './types'

@@ -47,10 +47,17 @@ const QuizInfoCard: React.FC<QuizInfoCardProps> = ({
           <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(quizSettings.difficulty)}`}>
             {quizSettings.difficulty}
           </span>
-          <div className="flex items-center gap-1 text-sm text-gray-500">
-            <Award className="w-4 h-4" />
-            <span>Competitive</span>
-          </div>
+          {quizSettings.isCustomQuiz ? (
+            <div className="flex items-center gap-1 text-sm text-purple-600 bg-purple-100 px-2 py-1 rounded-full">
+              <Award className="w-4 h-4" />
+              <span>Custom Quiz</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 text-sm text-gray-500">
+              <Award className="w-4 h-4" />
+              <span>Competitive</span>
+            </div>
+          )}
         </div>
       </div>
 

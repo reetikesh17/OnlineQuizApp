@@ -1,13 +1,18 @@
 "use client"
 
 import React from 'react'
-import { Play, Settings, UserX, Users, AlertCircle } from 'lucide-react'
+import { Play, Settings, UserX, Users, AlertCircle, Plus } from 'lucide-react'
 import { HostControlsProps } from '../types'
 
-const HostControls: React.FC<HostControlsProps> = ({
+interface ExtendedHostControlsProps extends HostControlsProps {
+  onCreateQuiz?: () => void
+}
+
+const HostControls: React.FC<ExtendedHostControlsProps> = ({
   onStartQuiz,
   onEditSettings,
   onKickPlayer,
+  onCreateQuiz,
   canStartQuiz,
   playerCount
 }) => {
@@ -69,6 +74,19 @@ const HostControls: React.FC<HostControlsProps> = ({
             <div className="text-sm text-blue-600">Configure quiz options</div>
           </div>
         </button>
+
+        {onCreateQuiz && (
+          <button
+            onClick={onCreateQuiz}
+            className="w-full flex items-center gap-3 px-4 py-3 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            <div className="text-left">
+              <div className="font-medium">Create Custom Quiz</div>
+              <div className="text-sm text-purple-600">Design your own questions</div>
+            </div>
+          </button>
+        )}
 
         <button
           onClick={() => onKickPlayer('')}

@@ -25,6 +25,16 @@ export interface QuizSettings {
   timePerQuestion: number
   allowHints: boolean
   showCorrectAnswers: boolean
+  isCustomQuiz?: boolean
+  customQuestions?: CustomQuestion[]
+}
+
+export interface CustomQuestion {
+  id: string
+  question: string
+  options: string[]
+  correctAnswer: string
+  explanation?: string
 }
 
 export interface RoomConfig {
@@ -121,6 +131,12 @@ export interface SettingsModalProps {
 export interface RulesModalProps {
   isOpen: boolean
   onClose: () => void
+}
+
+export interface CreateQuizModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onSave: (quiz: { title: string; questions: CustomQuestion[] }) => void
 }
 
 export interface LeaderboardSnapshotProps {
