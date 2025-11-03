@@ -152,6 +152,7 @@ interface AppContextType {
   quizzes: Quiz[]
   currentQuiz: Quiz | null
   startQuiz: (quizId: string) => void
+  startCustomQuiz: (quiz: Quiz) => void
   submitQuiz: (answers: Record<string, string | string[]>) => QuizAttempt
   lastAttempt: QuizAttempt | null
 }
@@ -229,6 +230,10 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (quiz) setCurrentQuiz(quiz)
   }
 
+  const startCustomQuiz = (quiz: Quiz) => {
+    setCurrentQuiz(quiz)
+  }
+
   const submitQuiz = (answers: Record<string, string | string[]>) => {
     if (!currentQuiz) throw new Error("No active quiz")
 
@@ -278,6 +283,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         quizzes: quizData,
         currentQuiz,
         startQuiz,
+        startCustomQuiz,
         submitQuiz,
         lastAttempt,
       }}
@@ -827,7 +833,7 @@ const Profile: React.FC = () => {
 
 const App: React.FC = () => {
   const [page, setPage] = useState<"landing" | "auth" | "lobby" | "lobbyroom" | "quiz" | "results" | "profile">("landing")
-  const { user, login, logout, currentQuiz } = useApp()
+  const { user, login, logout, currentQuiz, startCustomQuiz } = useApp()
 
   useEffect(() => {
     if (currentQuiz) setPage("quiz")
@@ -916,7 +922,12 @@ const App: React.FC = () => {
                 }}
                 isHost={true}
                 onBackToLobby={() => setPage("lobby")}
-                onStartQuiz={() => setPage("quiz")}
+                onStartQuiz={(customQuiz) => {
+                  if (customQuiz) {
+                    startCustomQuiz(customQuiz)
+                  }
+                  setPage("quiz")
+                }}
               />
             )}
             {page === "quiz" && <QuizPage onComplete={() => setPage("results")} />}

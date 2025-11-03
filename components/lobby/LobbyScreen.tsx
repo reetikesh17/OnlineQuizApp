@@ -22,7 +22,7 @@ import CreateQuizModal from './components/CreateQuizModal'
 
 interface LobbyScreenMainProps extends LobbyScreenProps {
   onBackToLobby: () => void
-  onStartQuiz: () => void
+  onStartQuiz: (customQuiz?: any) => void
 }
 
 const LobbyScreen: React.FC<LobbyScreenMainProps> = ({
@@ -72,9 +72,28 @@ const LobbyScreen: React.FC<LobbyScreenMainProps> = ({
   // Handle countdown completion
   useEffect(() => {
     if (countdownComplete) {
-      onStartQuiz()
+      // If it's a custom quiz, pass the quiz data
+      if (quizSettings.isCustomQuiz && quizSettings.customQuestions) {
+        const customQuiz = {
+          id: 'custom-' + Date.now(),
+          title: quizSettings.topic,
+          description: `Custom quiz: ${quizSettings.topic}`,
+          duration: quizSettings.questionCount * quizSettings.timePerQuestion,
+          category: 'Custom',
+          questions: quizSettings.customQuestions.map(q => ({
+            id: q.id,
+            type: 'radio' as const,
+            question: q.question,
+            options: q.options.filter(opt => opt && opt.trim()),
+            correctAnswer: q.correctAnswer
+          }))
+        }
+        onStartQuiz(customQuiz)
+      } else {
+        onStartQuiz()
+      }
     }
-  }, [countdownComplete, onStartQuiz])
+  }, [countdownComplete, onStartQuiz, quizSettings])
 
   // Host control handlers
   const handleStartQuiz = () => {
