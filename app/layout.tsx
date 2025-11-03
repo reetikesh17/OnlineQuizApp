@@ -5,9 +5,9 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'QuizMaster',
+  description: 'Challenge yourself with interactive quizzes and track your progress',
+  generator: 'QuizMaster Pro',
 }
 
 export default function RootLayout({
